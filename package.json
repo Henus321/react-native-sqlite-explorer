@@ -68,7 +68,9 @@
     "@react-native/eslint-config": "^0.73.1",
     "@release-it/conventional-changelog": "^5.0.0",
     "@types/jest": "^29.5.5",
+    "@types/lodash": "^4.17.7",
     "@types/react": "^18.2.44",
+    "@types/react-native-sqlite-storage": "^6.0.5",
     "commitlint": "^17.0.2",
     "del-cli": "^5.1.0",
     "eslint": "^8.51.0",
@@ -183,5 +185,9 @@
     "type": "module-legacy",
     "languages": "kotlin-swift",
     "version": "0.41.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "react-native-sqlite-storage": "^6.0.1"
   }
 }
