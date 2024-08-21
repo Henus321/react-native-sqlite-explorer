@@ -17,22 +17,6 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
   const [select, setSelect] = useState('');
 
   useEffect(() => {
-    const loadBase = async () => {
-      try {
-        await DB.open(params);
-        setSignatures(
-          ((await DB.getTablesSignature()) || []).sort((a, b) =>
-            a.name.localeCompare(b.name)
-          )
-        );
-      } catch (error: any) {
-        Alert.alert(
-          'Внимание',
-          'Не удалось открыть базу данных: ' + error.message
-        );
-      }
-    };
-
     loadBase();
   }, []);
 
@@ -41,7 +25,23 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
       signatures.find((signature) => signature.name === select) || null;
 
     if (!!curSignature) queryTableData(curSignature);
-  }, [select, signatures]);
+  }, [select]);
+
+  const loadBase = async () => {
+    try {
+      await DB.open(params);
+      setSignatures(
+        ((await DB.getTablesSignature()) || []).sort((a, b) =>
+          a.name.localeCompare(b.name)
+        )
+      );
+    } catch (error: any) {
+      Alert.alert(
+        'Внимание',
+        'Не удалось открыть базу данных: ' + error.message
+      );
+    }
+  };
 
   const queryTableData = async (signature: TableSignature) => {
     if (!signature) return;
