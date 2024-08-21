@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { DBParamsType, TableSignature } from "./types";
-import { GlobalStyles } from "./styles";
+import { useEffect, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { DBParamsType, TableSignature } from './types';
+import { GlobalStyles } from './styles';
 
-import Table from "./components/Table";
-import Select from "./components/Select";
-import DB from "./models/DB";
+import Table from './components/Table';
+import Select from './components/Select';
+import DB from './models/DB';
 
 type SQLiteExplorerProps = {
   params: DBParamsType;
@@ -14,9 +14,25 @@ type SQLiteExplorerProps = {
 const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
   const [signatures, setSignatures] = useState<TableSignature[]>([]);
   const [tableData, setTableData] = useState<TableSignature | null>(null);
-  const [select, setSelect] = useState("");
+  const [select, setSelect] = useState('');
 
   useEffect(() => {
+    const loadBase = async () => {
+      try {
+        await DB.open(params);
+        setSignatures(
+          ((await DB.getTablesSignature()) || []).sort((a, b) =>
+            a.name.localeCompare(b.name)
+          )
+        );
+      } catch (error: any) {
+        Alert.alert(
+          'Внимание',
+          'Не удалось открыть базу данных: ' + error.message
+        );
+      }
+    };
+
     loadBase();
   }, []);
 
@@ -25,23 +41,7 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
       signatures.find((signature) => signature.name === select) || null;
 
     if (!!curSignature) queryTableData(curSignature);
-  }, [select]);
-
-  const loadBase = async () => {
-    try {
-      await DB.open(params);
-      setSignatures(
-        ((await DB.getTablesSignature()) || []).sort((a, b) =>
-          a.name.localeCompare(b.name)
-        )
-      );
-    } catch (error: any) {
-      Alert.alert(
-        "Внимание",
-        "Не удалось открыть базу данных: " + error.message
-      );
-    }
-  };
+  }, [select, signatures]);
 
   const queryTableData = async (signature: TableSignature) => {
     if (!signature) return;
@@ -81,7 +81,7 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    width: "100%",
+    width: '100%',
     backgroundColor: GlobalStyles.colors.lightGray,
   },
   ContainerInner: {

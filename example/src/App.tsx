@@ -13,24 +13,23 @@ export default function App() {
   const baseName = defaultBasePrefix + '-' + defaultBasePostfix;
 
   useEffect(() => {
+    const loadBase = async (): Promise<void> => {
+      setPath((await getDatabasePath(baseName)) || "can't find path");
+
+      // инициализирую подключение к базе
+      try {
+        await DB.open(baseName);
+        setOpened(true);
+      } catch (error: any) {
+        Alert.alert(
+          'Внимание',
+          'Не удалось открыть базу данных: ' + error.message
+        );
+      }
+    };
+
     loadBase();
-    // eslint-disable-next-line
   }, []);
-
-  const loadBase = async (): Promise<void> => {
-    setPath((await getDatabasePath(baseName)) || "can't find path");
-
-    // инициализирую подключение к базе
-    try {
-      await DB.open(baseName);
-      setOpened(true);
-    } catch (error: any) {
-      Alert.alert(
-        'Внимание',
-        'Не удалось открыть базу данных: ' + error.message
-      );
-    }
-  };
 
   return (
     <View style={styles.container}>

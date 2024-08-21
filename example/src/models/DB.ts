@@ -1,7 +1,6 @@
 // версия с шифрованием - https://github.com/axsy-dev/react-native-sqlcipher-storage
 import { Alert } from 'react-native';
 import { getDatabasePath } from '../../../src/utils';
-import _ from 'lodash';
 
 import SQLite from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
 
