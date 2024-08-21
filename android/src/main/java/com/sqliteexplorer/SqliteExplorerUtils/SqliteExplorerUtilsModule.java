@@ -1,4 +1,4 @@
-package com.sqliteexplorer.Utils;
+package com.sqliteexplorer.SqliteExplorerUtils;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -25,13 +25,13 @@ import android.provider.Settings;
 
 // https://dev.to/mathias5r/how-to-create-an-unstoppable-service-in-react-native-using-headless-js-android-5f61
 // https://developer.android.com/guide/components/foreground-services#java
-public class UtilsModule extends ReactContextBaseJavaModule {
+public class SqliteExplorerUtilsModule extends ReactContextBaseJavaModule {
 
-    public static final String REACT_CLASS = "Utils";
+    public static final String REACT_CLASS = "SqliteExplorerUtils";
     private static ReactApplicationContext reactContext;
     private BroadcastReceiver screenOnOffReceiver;
 
-    public UtilsModule(@Nonnull ReactApplicationContext reactContext) {
+    public SqliteExplorerUtilsModule(@Nonnull ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
     }

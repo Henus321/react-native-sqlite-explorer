@@ -6,8 +6,8 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-export const Utils = NativeModules.Utils
-  ? NativeModules.Utils
+export const Utils = NativeModules.SqliteExplorerUtils
+  ? NativeModules.SqliteExplorerUtils
   : new Proxy(
       {},
       {

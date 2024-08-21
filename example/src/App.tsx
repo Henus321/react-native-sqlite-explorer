@@ -8,7 +8,7 @@ const defaultBasePrefix = 'defaultBasePrefix';
 const defaultBasePostfix = '1';
 
 export default function App() {
-  const [path, setPath] = useState('');
+  const [loader, setLoader] = useState('');
   const [opened, setOpened] = useState(false);
   const baseName = defaultBasePrefix + '-' + defaultBasePostfix;
 
@@ -17,7 +17,10 @@ export default function App() {
   }, []);
 
   const loadBase = async (): Promise<void> => {
-    setPath((await getDatabasePath(baseName)) || "can't find path");
+    const pathString = await getDatabasePath(baseName);
+    setLoader(
+      !!pathString ? `Loading from ${pathString}...` : "Error! Can't find path"
+    );
 
     // инициализирую подключение к базе
     try {
@@ -36,7 +39,7 @@ export default function App() {
       {opened ? (
         <SQLiteExplorer params={{ name: baseName }} />
       ) : (
-        <Text>Loading from {path}...</Text>
+        <Text>{loader}</Text>
       )}
     </View>
   );
@@ -48,6 +51,5 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
   },
 });

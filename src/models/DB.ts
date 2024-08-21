@@ -1,24 +1,17 @@
 import { Alert } from 'react-native';
 import { DBParamsType, TableSignature, TableSignatureValue } from '../types';
-import {
-  DEBUG,
-  enablePromise,
-  ResultSet,
-  SQLiteDatabase,
-  openDatabase,
-} from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
+import SQLite, { ResultSet } from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
 import { tryParse, getErrorText } from '../utils';
 import _ from 'lodash';
 
-// SQLite.DEBUG(process.env.NODE_ENV !== 'production');
-DEBUG(false);
-enablePromise(true);
+SQLite.DEBUG(false);
+SQLite.enablePromise(true);
 
 /**
  * Коннектор к базе данных
  */
 class Database {
-  DB: SQLiteDatabase | null = null;
+  DB: SQLite.SQLiteDatabase | null = null;
   basePath: string | null = null;
 
   transaction: Function = (callback: () => Promise<void>) =>
@@ -52,12 +45,12 @@ class Database {
   isOpen = (): boolean => !!this.DB;
 
   open = ({ name, location = 'default' }: DBParamsType) => {
-    return new Promise<SQLiteDatabase>(async (resolve, reject) => {
+    return new Promise<SQLite.SQLiteDatabase>(async (resolve, reject) => {
       if (!!this.DB) {
         return resolve(this.DB);
       }
-      console.log(openDatabase);
-      openDatabase(
+
+      SQLite.openDatabase(
         {
           name: name,
           location,

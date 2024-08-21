@@ -8,14 +8,14 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.sqliteexplorer.Utils.UtilsModule;
+import com.sqliteexplorer.SqliteExplorerUtils.SqliteExplorerUtilsModule;
 
 public class SqliteExplorerPackage implements ReactPackage {
   @NonNull
   @Override
   public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-	modules.add(new UtilsModule(reactContext));
+	modules.add(new SqliteExplorerUtilsModule(reactContext));
     return modules;
   }
 
