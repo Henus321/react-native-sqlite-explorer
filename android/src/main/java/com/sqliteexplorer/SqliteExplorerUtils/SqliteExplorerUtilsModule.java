@@ -44,7 +44,7 @@ public class SqliteExplorerUtilsModule extends ReactContextBaseJavaModule {
 
     // получить путь к базе данных
     @ReactMethod
-    public void getDatabasePath(String dbName, Promise p) {
+    public void getDBPath(String dbName, Promise p) {
         File dbfile = this.reactContext.getDatabasePath(dbName);
 
         p.resolve(dbfile.getAbsolutePath());

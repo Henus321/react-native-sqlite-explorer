@@ -1,6 +1,6 @@
 // версия с шифрованием - https://github.com/axsy-dev/react-native-sqlcipher-storage
 import { Alert } from 'react-native';
-import { getDatabasePath } from '../../../src/utils';
+import { getDBPath } from '../../../src/utils';
 
 import SQLite from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
 
@@ -53,7 +53,7 @@ class Database {
       }
 
       // не обязательно
-      this.basePath = await getDatabasePath(baseName);
+      this.basePath = await getDBPath(baseName);
 
       const params = {
         name: baseName,

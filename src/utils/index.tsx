@@ -17,8 +17,8 @@ export const Utils = NativeModules.SqliteExplorerUtils
       }
     );
 
-export function getDatabasePath(dbName: string): Promise<string> {
-  return Utils.getDatabasePath(dbName);
+export function getDBPath(dbName: string): Promise<string> {
+  return Utils.getDBPath(dbName);
 }
 
 export const tryParse = (data: any): object | null => {

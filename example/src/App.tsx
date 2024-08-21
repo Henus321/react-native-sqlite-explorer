@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import { getDatabasePath } from '../../src/utils';
+import { getDBPath } from '../../src/utils';
 import DB from './models/DB';
 import SQLiteExplorer from '../../src';
 
@@ -17,7 +17,7 @@ export default function App() {
   }, []);
 
   const loadBase = async (): Promise<void> => {
-    const pathString = await getDatabasePath(baseName);
+    const pathString = await getDBPath(baseName);
     setLoader(
       !!pathString ? `Loading from ${pathString}...` : "Error! Can't find path"
     );
