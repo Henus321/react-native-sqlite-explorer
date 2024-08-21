@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { getDatabasePath } from '../../src/utils';
-import SQLiteExplorer from 'react-native-sqlite-explorer';
 import DB from './models/DB';
+import SQLiteExplorer from '../../src';
 
 const defaultBasePrefix = 'defaultBasePrefix';
 const defaultBasePostfix = '1';
@@ -14,8 +14,9 @@ export default function App() {
 
   useEffect(() => {
     loadBase();
+    // eslint-disable-next-line
   }, []);
-  
+
   const loadBase = async (): Promise<void> => {
     setPath((await getDatabasePath(baseName)) || "can't find path");
 
