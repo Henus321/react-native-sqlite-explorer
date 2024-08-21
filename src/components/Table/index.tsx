@@ -124,9 +124,9 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
           <View style={styles.Row}>
             <View style={styles.CheckedCell}></View>
 
-            {tableData.fields.map((field) => (
+            {tableData.fields.map((field, index) => (
               <View
-                key={field.name}
+                key={`${field.name}_${field.type}_${index}`}
                 style={[styles.RowCell, styles.RowHeadCell]}
               >
                 <Text style={styles.BoldText} numberOfLines={1}>
