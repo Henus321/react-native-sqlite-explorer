@@ -35,7 +35,7 @@ const TableModal = ({
   useEffect(() => {
     setModel(initialModel);
     setErrors({});
-  }, [modalType, initialModel]);
+  }, [modalType]);
 
   const getValidate = (model: TableSignatureValue): TableSignatureValue => {
     return tableData.fields.reduce((acc, field) => {
