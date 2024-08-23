@@ -79,19 +79,14 @@ const TableModal = ({
     >
       <View>
         {tableData.fields.map((field) => {
-          const readOnly =
-            typeof model[field.name] === 'object' && model[field.name] !== null;
-
           return (
             <Input
               title={`${isFieldRequired(field.type) ? '*' : ''}${field.name} (${field.type})`}
               key={`field-input-${field.name}`}
               text={model[field.name]}
-              readOnly={readOnly ? () => {} : false}
               onChangeText={(value) => onChange(field.name, value)}
               style={{ marginBottom: 6 }}
               showMicrofone={false}
-              showClearButton={!readOnly}
               placeholder={`${field.name}`}
               error={!!errors?.[field.name] ? errors[field.name] : false}
             />
