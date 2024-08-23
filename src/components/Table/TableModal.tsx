@@ -12,7 +12,7 @@ type TableModalProps = {
 	tableData: TableSignature;
 	modalType: ModalType;
 	onClose: () => void;
-	onSubmit: (model: TableSignatureValue) => void;
+	onSubmit: (model: TableSignatureValue, initialModel: TableSignatureValue,) => void;
 };
 
 const TableModal = ({
@@ -24,14 +24,13 @@ const TableModal = ({
 }: TableModalProps) => {
 	const [model, setModel] = useState<TableSignatureValue>({});
 	const [errors, setErrors] = useState<TableSignatureValue>({});
+	const initialModel = getInitialModel(
+		tableData.fields,
+		modalType === 'update' ? checkedRowValue : null
+	);
 
 	useEffect(() => {
-		setModel(
-			getInitialModel(
-				tableData.fields,
-				modalType === 'update' ? checkedRowValue : null
-			)
-		);
+		setModel(initialModel);
 		setErrors({});
 	}, [modalType]);
 
@@ -65,7 +64,7 @@ const TableModal = ({
 
 		if (!!errorLength) return;
 
-		onSubmit(model);
+		onSubmit(model, initialModel);
 	};
 
 	return (

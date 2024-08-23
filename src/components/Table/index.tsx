@@ -64,17 +64,15 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
 		await DB.addRecord(tableData.name, model);
 	};
 
-	const onUpdate = async (model: TableSignatureValue) => {
+	const onUpdate = async (model: TableSignatureValue, initModel: TableSignatureValue) => {
 		if (!checkedRowValue) return;
 
-		await DB.editRecord(tableData.name, model)
-		//await DB.deleteRecord(tableData.name, checkedRowValue);
-		//await DB.addRecord(tableData.name, model);
+		await DB.editRecord(tableData.name, model, initModel)
 	};
 
-	const onModalSubmit = async (model: TableSignatureValue) => {
+	const onModalSubmit = async (model: TableSignatureValue, initModel: TableSignatureValue) => {
 		if (modalType === 'add') await onAdd(model);
-		if (modalType === 'update') await onUpdate(model);
+		if (modalType === 'update') await onUpdate(model, initModel);
 
 		await onActionSuccess(tableData);
 		setModalType(null);

@@ -179,7 +179,7 @@ class Database {
 
 	addRecord = async (
 		tableName: string,
-		model: Record<string, string>
+		model: TableSignatureValue
 	): Promise<[ResultSet] | undefined | null> => {
 		try {
 			return await this.DB?.executeSql(
@@ -199,15 +199,33 @@ class Database {
 
 	editRecord = async (
 		tableName: string,
-		model: Record<string, string>
+		model: TableSignatureValue,
+		initModel: Record<string, any>
 	): Promise<[ResultSet] | undefined | null> => {
 		try {
+			const where = Object.keys(initModel).reduce((acc, key, index) => {
+				const value = initModel[key];
+
+				if (!value || (typeof value === 'string' && value.length > 255) || typeof value === 'object')
+					return acc;
+
+				return (
+					acc +
+					`${index !== 0 ? ' AND ' : ''}${key}=${typeof value === 'string' ? "'" + value + "'" : value}`
+				);
+			}, '');
+
+			const dataToSet = Object.keys(model).reduce((acc, key, index, arr) => {
+				const rawValue = model[key];
+				if (typeof rawValue === 'object' || rawValue === null) return acc;
+
+				const value = typeof rawValue === "string" ? `'${rawValue}'` : rawValue;
+
+				return acc + ` ${key} = ${value} ` + (index + 1 === arr.length ? "" : ",");
+			}, "");
+
 			return await this.DB?.executeSql(
-				`INSERT OR REPLACE INTO ${tableName} (${Object.keys(model).join(',')}) 
-			VALUES (${Object.keys(model)
-					.map(() => '?')
-					.join(',')})`,
-				Object.values(model)
+				`UPDATE ${tableName} SET ${dataToSet} WHERE ${where}`,
 			);
 		} catch (err) {
 			const message = getErrorText(err);
