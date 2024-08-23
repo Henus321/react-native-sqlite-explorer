@@ -8,89 +8,96 @@ import Input from '../Input';
 import Modal from '../Modal';
 
 type TableModalProps = {
-  checkedRowValue: TableSignatureValue | null;
-  tableData: TableSignature;
-  modalType: ModalType;
-  onClose: () => void;
-  onSubmit: (model: TableSignatureValue) => void;
+	checkedRowValue: TableSignatureValue | null;
+	tableData: TableSignature;
+	modalType: ModalType;
+	onClose: () => void;
+	onSubmit: (model: TableSignatureValue) => void;
 };
 
 const TableModal = ({
-  checkedRowValue,
-  tableData,
-  modalType,
-  onClose,
-  onSubmit,
+	checkedRowValue,
+	tableData,
+	modalType,
+	onClose,
+	onSubmit,
 }: TableModalProps) => {
-  const [model, setModel] = useState<TableSignatureValue>({});
-  const [errors, setErrors] = useState<TableSignatureValue>({});
+	const [model, setModel] = useState<TableSignatureValue>({});
+	const [errors, setErrors] = useState<TableSignatureValue>({});
 
-  useEffect(() => {
-    setModel(
-      getInitialModel(
-        tableData.fields,
-        modalType === 'update' ? checkedRowValue : null
-      )
-    );
-    setErrors({});
-  }, [modalType]);
+	useEffect(() => {
+		setModel(
+			getInitialModel(
+				tableData.fields,
+				modalType === 'update' ? checkedRowValue : null
+			)
+		);
+		setErrors({});
+	}, [modalType]);
 
-  const getValidate = (model: TableSignatureValue): TableSignatureValue => {
-    return tableData.fields.reduce((acc, field) => {
-      if (isFieldRequired(field.type)) {
-        Object.assign(acc, {
-          [field.name]: !!model[field.name] ? '' : REQIRED_TEXT,
-        });
-      }
+	const getValidate = (model: TableSignatureValue): TableSignatureValue => {
+		return tableData.fields.reduce((acc, field) => {
+			if (isFieldRequired(field.type)) {
+				Object.assign(acc, {
+					[field.name]: !!model[field.name] ? '' : REQIRED_TEXT,
+				});
+			}
 
-      return acc;
-    }, {} as TableSignatureValue);
-  };
+			return acc;
+		}, {} as TableSignatureValue);
+	};
 
-  const onChange = (field: string, value: string) => {
-    const newModel = { ...model, [field]: value };
-    setModel(newModel);
+	const onChange = (field: string, value: string) => {
+		const newModel = { ...model, [field]: value };
+		setModel(newModel);
 
-    const _errors = getValidate(newModel);
-    setErrors({
-      ...errors,
-      [field]: !!_errors[field] ? _errors[field] : '',
-    });
-  };
+		const _errors = getValidate(newModel);
+		setErrors({
+			...errors,
+			[field]: !!_errors[field] ? _errors[field] : '',
+		});
+	};
 
-  const onSubmitHandler = () => {
-    const _errors = getValidate(model);
-    const errorLength = Object.values(_errors).filter((a) => !!a.length).length;
-    setErrors(_errors);
+	const onSubmitHandler = () => {
+		const _errors = getValidate(model);
+		const errorLength = Object.values(_errors).filter((a) => !!a.length).length;
+		setErrors(_errors);
 
-    if (!!errorLength) return;
+		if (!!errorLength) return;
 
-    onSubmit(model);
-  };
+		onSubmit(model);
+	};
 
-  return (
-    <Modal
-      visible={!!modalType}
-      title={`${modalType === 'add' ? `Add new ${tableData.name} record` : `Update ${tableData.name} record`}`}
-      onClose={onClose}
-      onSubmit={onSubmitHandler}
-    >
-      <View>
-        {tableData.fields.map((field) => (
-          <Input
-            title={`${isFieldRequired(field.type) ? '*' : ''}${field.name} (${field.type})`}
-            key={`field-input-${field.name}`}
-            text={model[field.name]}
-            onChangeText={(value) => onChange(field.name, value)}
-            style={{ marginBottom: 6 }}
-            showMicrofone={false}
-            placeholder={`${field.name}`}
-            error={!!errors?.[field.name] ? errors[field.name] : false}
-          />
-        ))}
-      </View>
-    </Modal>
-  );
+	return (
+		<Modal
+			visible={!!modalType}
+			title={`${modalType === 'add' ? `Add new ${tableData.name} record` : `Update ${tableData.name} record`}`}
+			onClose={onClose}
+			onSubmit={onSubmitHandler}
+		>
+			<View>
+				{tableData.fields.map((field) => {
+					const readOnly = typeof model[field.name] === 'object' && model[field.name] !== null;
+
+					return (
+						<Input
+							title={`${isFieldRequired(field.type) ? '*' : ''}${field.name} (${field.type})`}
+							key={`field-input-${field.name}`}
+							text={model[field.name]}
+							readOnly={readOnly ? () => { } : false}
+							onChangeText={(value) => onChange(field.name, value)}
+							style={[{ marginBottom: 6 }]}
+							showMicrofone={false}
+							showClearButton={!readOnly}
+							placeholder={`${field.name}`}
+							error={!!errors?.[field.name] ? errors[field.name] : false}
+
+						/>
+					)
+				})}
+			</View>
+		</Modal>
+	);
 };
 
 export default TableModal;
