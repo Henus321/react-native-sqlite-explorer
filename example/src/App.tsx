@@ -3,6 +3,9 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import { getDBPath } from '../../src/utils';
 import DB from './models/DB';
 import SQLiteExplorer from '../../src';
+import Document from './models/Document';
+import Record from './models/Record';
+import Setting from './models/Setting';
 
 const defaultBasePrefix = 'defaultBasePrefix';
 const defaultBasePostfix = '1';
@@ -22,16 +25,19 @@ export default function App() {
       !!pathString ? `Loading from ${pathString}...` : "Error! Can't find path"
     );
 
-    // инициализирую подключение к базе
+    // init database
     try {
       await DB.open(baseName);
       setOpened(true);
     } catch (error: any) {
-      Alert.alert(
-        'Внимание',
-        'Не удалось открыть базу данных: ' + error.message
-      );
+      Alert.alert('Error!', "Can't open database: " + error.message);
+      return;
     }
+
+    // init models
+    await Document.init();
+    await Record.init();
+    await Setting.init();
   };
 
   return (

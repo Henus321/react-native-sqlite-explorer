@@ -1,15 +1,13 @@
-// версия с шифрованием - https://github.com/axsy-dev/react-native-sqlcipher-storage
 import { Alert } from 'react-native';
 import { getDBPath } from '../../../src/utils';
 
-import SQLite from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
+import SQLite from 'react-native-sqlite-storage';
 
-// SQLite.DEBUG(process.env.NODE_ENV !== 'production');
 SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
 /**
- * Коннектор к базе данных
+ * Database connector
  */
 class Database {
   DB: SQLite.SQLiteDatabase | null = null;
@@ -18,11 +16,9 @@ class Database {
   transaction: Function = (callback: () => Promise<void>) =>
     this?.DB?.transaction(callback);
 
-  // сделаю свое логирование ошибок на проде
   executeSql: Function = async (sql: string, arg?: any[]): Promise<any[]> => {
-    // если вдруг подключение пропало, попытаюсь его восстановить
     if (!this.DB) {
-      Alert.alert('executeSql: Не удалось переподключиться к базе');
+      Alert.alert("executeSql: can't re-connect to database");
       return [];
     }
 
@@ -52,7 +48,7 @@ class Database {
         return resolve(this.DB);
       }
 
-      // не обязательно
+      // not necessary
       this.basePath = await getDBPath(baseName);
 
       const params = {
@@ -64,7 +60,6 @@ class Database {
         params,
         (DB) => {
           this.DB = DB;
-          // Нужно включить внешние ключи
           this.executeSql('PRAGMA foreign_keys = ON').then(() => {
             return resolve(DB);
           });
@@ -91,6 +86,13 @@ class Database {
 
       return resolve();
     });
+  };
+
+  isTableExist = async (table: string = ''): Promise<boolean> => {
+    const ifExist = await this.executeSql(
+      `SELECT EXISTS(SELECT name FROM sqlite_master WHERE type='table' AND name='${table}') as exist`
+    );
+    return !!ifExist?.[0]?.rows?.item(0)?.exist ?? false;
   };
 }
 
