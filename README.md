@@ -28,11 +28,11 @@ export default SQLiteExplorerScreen;
 
 Temporarily only for Android
 
-![Example 1](/src/assets/example-1.png)
-![Example 2](/src/assets/example-2.png)
+![Example 1](/src/assets/example-1.jpg)
+![Example 2](/src/assets/example-2.jpg)
 
-![Example 3](/src/assets/example-3.png)
-![Example 4](/src/assets/example-4.png)
+![Example 3](/src/assets/example-3.jpg)
+![Example 4](/src/assets/example-4.jpg)
 
 ## License
 
