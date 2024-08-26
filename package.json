@@ -1,6 +1,6 @@
 {
   "name": "react-native-sqlite-explorer",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Explorer for react-native-sqlite-storage library database inside react native app",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",

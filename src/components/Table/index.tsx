@@ -160,7 +160,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
               />
             )}
             // TODO как тут быть с ключем? поля id может и не быть
-            keyExtractor={(item, index) => `row-${item.id}_${index}`}
+            keyExtractor={(item, index) => `row-${item.id}_${index}_`}
             bounces={true}
             initialNumToRender={20}
             style={styles.TableContainer}
