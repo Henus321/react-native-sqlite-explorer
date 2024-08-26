@@ -1,41 +1,21 @@
-import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 
-const AnimateState = {
-  start: 0,
-  end: 360,
-};
-
 const Loader = () => {
-  const value = useRef(new Animated.Value(AnimateState.start)).current;
-  const inputRange = [AnimateState.start, AnimateState.end];
-  const rotate = value.interpolate({
-    inputRange,
-    outputRange: [0 + 'deg', 360 + 'deg'],
+  const spinValue = new Animated.Value(0);
+
+  Animated.loop(
+    Animated.timing(spinValue, {
+      toValue: 1,
+      duration: 1500,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    })
+  ).start();
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
   });
-
-  useEffect(() => {
-    startAnimate();
-
-    return () => {
-      stopAnimate();
-    };
-  }, []);
-
-  const startAnimate = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(value, {
-          toValue: AnimateState.end,
-          useNativeDriver: false,
-          duration: 1000,
-          easing: Easing.linear,
-        }),
-      ])
-    ).start();
-  };
-
-  const stopAnimate = () => value.stopAnimation();
 
   return (
     <View
@@ -51,7 +31,7 @@ const Loader = () => {
       <Animated.Image
         source={require('../../assets/reload.png')}
         style={{
-          transform: [{ rotate }],
+          transform: [{ rotate: spin }],
           justifyContent: 'center',
           marginTop: 'auto',
           marginBottom: 'auto',
