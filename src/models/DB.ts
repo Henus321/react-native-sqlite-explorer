@@ -117,22 +117,36 @@ class Database {
   getTablesSignature = async (): Promise<TableSignature[] | null> => {
     try {
       let tableFields = await this.executeSql(`
-			SELECT * FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'android_%'`);
+		SELECT * FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'android_%'`);
 
       return formatObject<any>(tableFields).map((i) => {
         const createTableFields: string[] = i.sql
           .slice(i.sql.indexOf('(') + 1, i.sql.lastIndexOf(')'))
           .replace(/\t|\n/g, '')
+          .replace(/ *\([^)]*\) */g, '')
           .split(',');
 
         return {
           name: i.name,
           fields: createTableFields
-            .filter((field) => !field.toLowerCase().startsWith('foreign'))
-            .map((item) => ({
-              name: item.trim().split(' ')?.[0],
-              type: item.trim().split(' ').slice(1).join(' '),
-            })),
+            .filter((field) => {
+              const lField = field.toLowerCase().trim();
+
+              if (
+                lField.startsWith('foreign key') ||
+                lField.startsWith('primary key') ||
+                lField.startsWith('constraint')
+              )
+                return false;
+
+              return true;
+            })
+            .map((item) => {
+              return {
+                name: item.trim().split(' ')?.[0],
+                type: item.trim().split(' ').slice(1).join(' '),
+              };
+            }),
           foreignKeys: createTableFields.filter((field) =>
             field.toLowerCase().startsWith('foreign')
           ),

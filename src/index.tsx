@@ -6,12 +6,14 @@ import { GlobalStyles } from './styles';
 import Table from './components/Table';
 import Select from './components/Select';
 import DB from './models/DB';
+import Loader from './components/Loader';
 
 type SQLiteExplorerProps = {
   params: DBParamsType;
 };
 
 const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
+  const [status, setStatus] = useState<'loading' | ''>('');
   const [signatures, setSignatures] = useState<TableSignature[]>([]);
   const [tableData, setTableData] = useState<TableSignature | null>(null);
   const [select, setSelect] = useState('');
@@ -33,6 +35,8 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
   const loadBase = async () => {
     if (!DB) return;
 
+    setStatus('loading');
+
     try {
       await DB.open(params);
       setSignatures(
@@ -46,13 +50,19 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
         'Не удалось открыть базу данных: ' + error.message
       );
     }
+
+    setStatus('');
   };
 
   const queryTableData = async (signature: TableSignature) => {
     if (!signature) return;
 
+    setStatus('loading');
+
     const signatureWithValues = await DB.insertValuesIntoSignature(signature);
     setTableData(signatureWithValues);
+
+    setStatus('');
   };
 
   const onActionSuccess = async (tableData: TableSignature) => {
@@ -75,9 +85,11 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
         />
       </View>
 
-      {!!tableData ? (
+      {status === 'loading' && <Loader />}
+      {status !== 'loading' && !!tableData && (
         <Table tableData={tableData} onActionSuccess={onActionSuccess} />
-      ) : (
+      )}
+      {status !== 'loading' && !tableData && (
         <Text style={styles.StatusText}>Empty</Text>
       )}
     </View>
