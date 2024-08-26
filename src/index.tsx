@@ -86,12 +86,10 @@ const SQLiteExplorer = ({ params }: SQLiteExplorerProps) => {
       </View>
 
       {status === 'loading' && <Loader />}
-      {status !== 'loading' && !!tableData && (
+      {!!tableData && (
         <Table tableData={tableData} onActionSuccess={onActionSuccess} />
       )}
-      {status !== 'loading' && !tableData && (
-        <Text style={styles.StatusText}>Empty</Text>
-      )}
+      {!tableData && <Text style={styles.StatusText}>Empty</Text>}
     </View>
   );
 };
