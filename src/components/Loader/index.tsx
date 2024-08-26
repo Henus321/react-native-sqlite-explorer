@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 
 const AnimateState = {
@@ -38,7 +38,16 @@ const Loader = () => {
   const stopAnimate = () => value.stopAnimation();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View
+      style={{
+        flex: 1,
+        position: 'absolute',
+        backgroundColor: '#ffffff60',
+        width: '100%',
+        height: '100%',
+        zIndex: 20,
+      }}
+    >
       <Animated.Image
         source={require('../../assets/reload.png')}
         style={{
@@ -48,6 +57,7 @@ const Loader = () => {
           marginBottom: 'auto',
           marginLeft: 'auto',
           marginRight: 'auto',
+          padding: 10,
         }}
       />
     </View>
