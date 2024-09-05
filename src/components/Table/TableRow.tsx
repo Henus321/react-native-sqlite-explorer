@@ -1,6 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TableSignatureValue } from '../../types';
 import { GlobalStyles } from '../../styles';
+
+import Text from '../Text';
 
 type TableRowProps = {
   row: TableSignatureValue;

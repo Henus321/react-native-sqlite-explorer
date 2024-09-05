@@ -1,15 +1,10 @@
 import { useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { OneSelectValueType } from '../../types';
+import { GlobalStyles } from '../../styles';
 
 import Input from '../Input';
-import { GlobalStyles } from '../../styles';
+import Text from '../Text';
 
 type ModalContentProps = {
   select: number | string | null;

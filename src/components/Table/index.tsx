@@ -4,7 +4,6 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -21,6 +20,7 @@ import TableRow from './TableRow';
 import TableActions from './TableActions';
 import TableModal from './TableModal';
 import Select from '../Select';
+import Text from '../Text';
 import DB from '../../models/DB';
 
 type TableProps = {

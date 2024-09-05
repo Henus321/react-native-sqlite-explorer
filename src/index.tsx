@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View, Text } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { DBParamsType, TableSignature } from './types';
 import { GlobalStyles } from './styles';
 
 import Table from './components/Table';
 import Select from './components/Select';
+import Text from './components/Text';
 import DB from './models/DB';
 import Loader from './components/Loader';
 

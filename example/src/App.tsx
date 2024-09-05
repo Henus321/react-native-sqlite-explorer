@@ -8,7 +8,7 @@ import Record from './models/Record';
 import Setting from './models/Setting';
 
 const defaultBasePrefix = 'defaultBasePrefix';
-const defaultBasePostfix = '1';
+const defaultBasePostfix = '2';
 
 export default function App() {
   const [loader, setLoader] = useState('');

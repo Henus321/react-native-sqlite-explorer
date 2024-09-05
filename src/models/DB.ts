@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { DBParamsType, TableSignature, TableSignatureValue } from '../types';
 import SQLite, { ResultSet } from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
-import { tryParse, getErrorText } from '../utils';
+import { getErrorText } from '../utils';
 import _ from 'lodash';
 
 SQLite.DEBUG(false);
