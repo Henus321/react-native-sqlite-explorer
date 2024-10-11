@@ -10,6 +10,7 @@ import {
 import {
   ModalType,
   OneSelectValueType,
+  SearchType,
   TableSignature,
   TableSignatureValue,
 } from '../../types';
@@ -35,11 +36,12 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
   const [recordsPerPage, setRecordsPerPage] = useState(
     RECORDS_PER_PAGE_TYPES[1]
   );
+  const [filteredValues, setFilteredValues] = useState(tableData.values || []);
   const checkedRowValue =
     checkedRowIndex !== null
-      ? tableData.values[checkedRowIndex + (page - 1) * recordsPerPage]
+      ? filteredValues[checkedRowIndex + (page - 1) * recordsPerPage]
       : null;
-  const pagesCount = Math.ceil(tableData.values.length / recordsPerPage);
+  const pagesCount = Math.ceil(filteredValues.length / recordsPerPage);
   const isFirstPage = page === 1;
   const isLastPage = pagesCount === page;
 
@@ -110,6 +112,21 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
     setCheckedRowIndex((prev) => (prev === index ? null : index));
   };
 
+  const onSearchSubmit = (search: SearchType) => {
+    if (!tableData) return;
+    if (!search.key) {
+      setFilteredValues(tableData.values);
+      return;
+    }
+
+    const searchValues = tableData.values.filter((val) => {
+      if (!val[search.key]) return false;
+
+      return val[search.key].toString().includes(search.value);
+    });
+    setFilteredValues(searchValues);
+  };
+
   return (
     <>
       <TableModal
@@ -124,6 +141,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
         isRowChecked={!!checkedRowValue}
         onDelete={onDelete}
         setModalType={setModalType}
+        onSearchSubmit={onSearchSubmit}
       />
 
       <ScrollView horizontal>
@@ -147,7 +165,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
           </View>
 
           <FlatList
-            data={tableData.values.slice(
+            data={filteredValues.slice(
               (page - 1) * recordsPerPage,
               page * recordsPerPage
             )}

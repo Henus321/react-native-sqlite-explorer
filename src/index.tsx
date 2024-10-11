@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { DBParamsType, TableSignature } from './types';
+import { DBParamsType, SearchType, TableSignature } from './types';
 import { GlobalStyles } from './styles';
 
 import Table from './components/Table';
