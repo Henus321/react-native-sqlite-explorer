@@ -147,6 +147,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
           </View>
 
           <FlatList
+            removeClippedSubviews={false}
             data={tableData.values.slice(
               (page - 1) * recordsPerPage,
               page * recordsPerPage
