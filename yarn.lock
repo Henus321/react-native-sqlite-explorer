@@ -2500,6 +2500,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@op-engineering/op-sqlite@npm:^15.2.11":
+  version: 15.2.11
+  resolution: "@op-engineering/op-sqlite@npm:15.2.11"
+  peerDependencies:
+    "@sqlite.org/sqlite-wasm": "*"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    "@sqlite.org/sqlite-wasm":
+      optional: true
+  checksum: 2e6592af75c69d3d478984741482ba729c3fbb905b085aef19dbc1be69f0f5b3cebfa617afbf659ad2e67ea8097911324aeae7943fba59c82ac6d850231e8b6d
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -3244,13 +3258,6 @@ __metadata:
   version: 15.7.12
   resolution: "@types/prop-types@npm:15.7.12"
   checksum: ac16cc3d0a84431ffa5cfdf89579ad1e2269549f32ce0c769321fdd078f84db4fbe1b461ed5a1a496caf09e637c0e367d600c541435716a55b1d9713f5035dfe
-  languageName: node
-  linkType: hard
-
-"@types/react-native-sqlite-storage@npm:^6.0.5":
-  version: 6.0.5
-  resolution: "@types/react-native-sqlite-storage@npm:6.0.5"
-  checksum: 192d4c3e2d93ea59f59387b8eb8d0aca3da32acca441aa5f84b2f4d919fc52aaa088ab5eb319ceec8471e58107d7463c56c733bfe5ff58915ac03b45313b6450
   languageName: node
   linkType: hard
 
@@ -10867,12 +10874,12 @@ __metadata:
   dependencies:
     "@commitlint/config-conventional": ^17.0.2
     "@evilmartians/lefthook": ^1.5.0
+    "@op-engineering/op-sqlite": ^15.2.11
     "@react-native/eslint-config": ^0.73.1
     "@release-it/conventional-changelog": ^5.0.0
     "@types/jest": ^29.5.5
     "@types/lodash": ^4.17.7
     "@types/react": ^18.2.44
-    "@types/react-native-sqlite-storage": ^6.0.5
     commitlint: ^17.0.2
     del-cli: ^5.1.0
     eslint: ^8.51.0
@@ -10884,7 +10891,6 @@ __metadata:
     react: 18.3.1
     react-native: 0.75.2
     react-native-builder-bob: ^0.30.0
-    react-native-sqlite-storage: ^6.0.1
     release-it: ^15.0.0
     turbo: ^1.10.7
     typescript: ^5.2.2

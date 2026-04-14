@@ -1,16 +1,17 @@
 import { Alert } from 'react-native';
 import { getDBPath } from '../../../src/utils';
 
-import SQLite from 'react-native-sqlite-storage';
+import { DB, open as openDB } from '@op-engineering/op-sqlite';
 
-SQLite.DEBUG(false);
-SQLite.enablePromise(true);
+// TODO?
+//SQLite.DEBUG(false);
+//SQLite.enablePromise(true);
 
 /**
  * Database connector
  */
 class Database {
-  DB: SQLite.SQLiteDatabase | null = null;
+  DB: DB | null = null;
   basePath: string | null = null;
 
   transaction: Function = (callback: () => Promise<void>) =>
@@ -24,7 +25,7 @@ class Database {
 
     let sqlRes;
     try {
-      sqlRes = await this.DB.executeSql(sql, arg);
+      sqlRes = await this.DB.execute(sql, arg);
     } catch (sqlError: any) {
       if (!!sqlError?.message) {
         Alert.alert(sqlError.message.substr(0, 450));
@@ -37,15 +38,15 @@ class Database {
       throw new Error(sqlError?.message ?? 'SQL ERROR');
     }
 
-    return sqlRes;
+    return sqlRes.rows;
   };
 
   isOpen = (): boolean => !!this.DB;
 
   open = (baseName: string = '') => {
-    return new Promise<SQLite.SQLiteDatabase>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       if (!!this.DB) {
-        return resolve(this.DB);
+        return resolve();
       }
 
       // not necessary
@@ -56,19 +57,17 @@ class Database {
         location: 'default',
       };
 
-      SQLite.openDatabase(
-        params,
-        (DB) => {
-          this.DB = DB;
-          this.executeSql('PRAGMA foreign_keys = ON').then(() => {
-            return resolve(DB);
-          });
-        },
-        (error) => {
-          Alert.alert('error', error.message);
-          reject();
-        }
-      );
+      this.DB = openDB(params);
+
+      // Нужно включить внешние ключи
+      this.executeSql('PRAGMA foreign_keys = ON')
+        .then(() => {
+          return resolve();
+        })
+        .catch((error: any) => {
+          Alert.alert('error', error?.message);
+          return reject();
+        });
     });
   };
 
@@ -92,7 +91,8 @@ class Database {
     const ifExist = await this.executeSql(
       `SELECT EXISTS(SELECT name FROM sqlite_master WHERE type='table' AND name='${table}') as exist`
     );
-    return !!ifExist?.[0]?.rows?.item(0)?.exist ?? false;
+    ifExist;
+    return !!ifExist?.rows?.item(0)?.exist ?? false;
   };
 }
 
