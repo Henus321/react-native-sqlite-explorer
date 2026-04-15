@@ -4,29 +4,29 @@ Explorer for react-native-sqlite-storage library database inside react native ap
 
 ## Installation
 
-
 ```sh
 npm install react-native-sqlite-explorer
 ```
 
-
 ## Usage
 
-
 ```js
-import { multiply } from 'react-native-sqlite-explorer';
+import SQLiteExplorer from 'react-native-sqlite-explorer';
 
-// ...
+const DBExplorer = () => {
+  // initial baseName that you used in params or taken from openDatabase success callback:
+  // SQLite.openDatabase({ name: baseName, location: 'default' }, DB => { DB.dbname <-- your baseName also here
+  const baseName = '<your_base_name_here>';
 
-const result = multiply(3, 7);
+  return <SQLiteExplorer params={{ name: baseName, location: 'default' }} />;
+};
+
+export default DBExplorer;
 ```
 
+## Tips
 
-## Contributing
-
-- [Development workflow](CONTRIBUTING.md#development-workflow)
-- [Sending a pull request](CONTRIBUTING.md#sending-a-pull-request)
-- [Code of conduct](CODE_OF_CONDUCT.md)
+Temporarily only for Android
 
 ## License
 
