@@ -37,9 +37,13 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
   );
   const checkedRowValue =
     checkedRowIndex !== null
-      ? tableData.values[checkedRowIndex + (page - 1) * recordsPerPage]
+      ? tableData.values[
+          checkedRowIndex + (page - 1) * (recordsPerPage as number)
+        ]
       : null;
-  const pagesCount = Math.ceil(tableData.values.length / recordsPerPage);
+  const pagesCount = Math.ceil(
+    tableData.values.length / (recordsPerPage as number)
+  );
   const isFirstPage = page === 1;
   const isLastPage = pagesCount === page;
 
@@ -113,6 +117,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
   return (
     <>
       <TableModal
+        // @ts-ignore
         checkedRowValue={checkedRowValue}
         tableData={tableData}
         modalType={modalType}
@@ -129,7 +134,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
       <ScrollView horizontal>
         <View style={[styles.ScrollInnerContainer]}>
           <View style={styles.Row}>
-            <View style={styles.CheckedCell}></View>
+            <View style={styles.CheckedCell} />
 
             {tableData.fields.map((field) => (
               <View
@@ -149,8 +154,8 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
           <FlatList
             removeClippedSubviews={false}
             data={tableData.values.slice(
-              (page - 1) * recordsPerPage,
-              page * recordsPerPage
+              (page - 1) * (recordsPerPage as number),
+              page * (recordsPerPage as number)
             )}
             renderItem={(props) => (
               <TableRow
@@ -207,6 +212,7 @@ const Table = ({ tableData, onActionSuccess }: TableProps) => {
               value: number,
               text: number.toString(),
             }))}
+            // @ts-ignore
             select={recordsPerPage}
             onSelect={onSelect}
           />

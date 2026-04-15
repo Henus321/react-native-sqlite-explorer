@@ -70,6 +70,7 @@ export default function Select({
         </Text>
 
         <Image
+          // @ts-ignore
           style={[styles.SelectArrow] as ImageStyle}
           source={require('../../assets/arrow.png')}
         />

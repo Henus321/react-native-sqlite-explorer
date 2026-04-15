@@ -33,6 +33,7 @@ const Modal = ({ children, title, visible, onClose, onSubmit }: ModalProps) => {
           </View>
           <TouchableOpacity onPress={onClose}>
             <Image
+              // @ts-ignore
               style={[styles.ContentHeadImage] as ImageStyle}
               source={require('../../assets/close.png')}
             />

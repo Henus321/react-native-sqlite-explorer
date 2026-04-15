@@ -1,14 +1,21 @@
-#import <React/RCTBridgeModule.h>
+#import "SqliteExplorer.h"
 
-@interface RCT_EXTERN_MODULE(SqliteExplorer, NSObject)
+@implementation SqliteExplorer
+- (NSNumber *)multiply:(double)a b:(double)b {
+    NSNumber *result = @(a * b);
 
-RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+    return result;
+}
 
-+ (BOOL)requiresMainQueueSetup
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return NO;
+    return std::make_shared<facebook::react::NativeSqliteExplorerSpecJSI>(params);
+}
+
++ (NSString *)moduleName
+{
+  return @"SqliteExplorer";
 }
 
 @end

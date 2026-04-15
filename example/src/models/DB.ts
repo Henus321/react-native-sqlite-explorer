@@ -1,74 +1,69 @@
 import { Alert } from 'react-native';
-import { getDBPath } from '../../../src/utils';
+// import { getDBPath } from '../../../src/utils';
 
-import SQLite from 'react-native-sqlite-storage';
+// https://op-engineering.github.io/op-sqlite/docs/installation
+import { DB, open, QueryResult } from '@op-engineering/op-sqlite';
 
-SQLite.DEBUG(false);
-SQLite.enablePromise(true);
+// TODO?
+//SQLite.DEBUG(false);
+//SQLite.enablePromise(true);
 
 /**
  * Database connector
  */
 class Database {
-  DB: SQLite.SQLiteDatabase | null = null;
+  DB: DB | null = null;
   basePath: string | null = null;
 
-  transaction: Function = (callback: () => Promise<void>) =>
+  transaction = (callback: () => Promise<void>) =>
     this?.DB?.transaction(callback);
 
-  executeSql: Function = async (sql: string, arg?: any[]): Promise<any[]> => {
+  executeSql = async (
+    sql: string,
+    arg?: any[]
+  ): Promise<QueryResult['rows'] | null> => {
     if (!this.DB) {
       Alert.alert("executeSql: can't re-connect to database");
-      return [];
+      return null;
     }
-
-    let sqlRes;
+    let sqlRes: QueryResult;
     try {
-      sqlRes = await this.DB.executeSql(sql, arg);
+      sqlRes = (await this.DB.execute(sql, arg)) as QueryResult;
     } catch (sqlError: any) {
       if (!!sqlError?.message) {
         Alert.alert(sqlError.message.substr(0, 450));
-
+        // @ts-ignore
         if (process.env.NODE_ENV !== 'production') {
           console.log('sqlError.message', sqlError.message);
         }
       }
-
       throw new Error(sqlError?.message ?? 'SQL ERROR');
     }
-
-    return sqlRes;
+    return sqlRes.rows;
   };
 
   isOpen = (): boolean => !!this.DB;
 
   open = (baseName: string = '') => {
-    return new Promise<SQLite.SQLiteDatabase>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       if (!!this.DB) {
-        return resolve(this.DB);
+        return resolve();
       }
 
       // not necessary
-      this.basePath = await getDBPath(baseName);
-
-      const params = {
+      this.DB = open({
         name: baseName,
-        location: 'default',
-      };
+      });
 
-      SQLite.openDatabase(
-        params,
-        (DB) => {
-          this.DB = DB;
-          this.executeSql('PRAGMA foreign_keys = ON').then(() => {
-            return resolve(DB);
-          });
-        },
-        (error) => {
-          Alert.alert('error', error.message);
-          reject();
-        }
-      );
+      // Нужно включить внешние ключи
+      this.executeSql('PRAGMA foreign_keys = ON')
+        .then(() => {
+          return resolve();
+        })
+        .catch((error: any) => {
+          Alert.alert('error', error?.message);
+          return reject();
+        });
     });
   };
 
@@ -77,22 +72,20 @@ class Database {
       if (!this.DB) {
         return resolve();
       }
-
       try {
         await this.DB.close();
-      } catch (error) {}
-
+      } catch {}
       this.DB = null;
-
       return resolve();
     });
   };
 
   isTableExist = async (table: string = ''): Promise<boolean> => {
+    if (!this.DB) return false;
     const ifExist = await this.executeSql(
       `SELECT EXISTS(SELECT name FROM sqlite_master WHERE type='table' AND name='${table}') as exist`
     );
-    return !!ifExist?.[0]?.rows?.item(0)?.exist ?? false;
+    return !!ifExist?.[0]?.exist || false;
   };
 }
 

@@ -1,36 +1,36 @@
 import { Alert } from 'react-native';
 import { DBParamsType, TableSignature, TableSignatureValue } from '../types';
-import SQLite, { ResultSet } from 'react-native-sqlite-storage'; // sselect sqlite_version()    -   "3.22.0"
+import { QueryResult, DB, open as openDB } from '@op-engineering/op-sqlite';
 import { getErrorText } from '../utils';
 import _ from 'lodash';
-
-SQLite.DEBUG(false);
-SQLite.enablePromise(true);
 
 /**
  * Коннектор к базе данных
  */
 class Database {
-  DB: SQLite.SQLiteDatabase | null = null;
+  DB: DB | null = null;
   basePath: string | null = null;
   error: string = '';
   transaction: Function = (callback: () => Promise<void>) =>
     this?.DB?.transaction(callback);
 
   // сделаю свое логирование ошибок на проде
-  executeSql: Function = async (sql: string, arg?: any[]): Promise<any[]> => {
+  executeSql = async (
+    sql: string,
+    arg?: any[]
+  ): Promise<QueryResult['rows'] | null> => {
     if (!this.DB) {
       Alert.alert('executeSql: Не удалось переподключиться к базе');
-      return [];
+      return null;
     }
 
     let sqlRes;
     try {
-      sqlRes = await this.DB.executeSql(sql, arg);
+      sqlRes = await this.DB.execute(sql, arg);
     } catch (sqlError: any) {
       if (!!sqlError?.message) {
         Alert.alert(sqlError.message.substr(0, 450));
-
+        // @ts-ignore
         if (process.env.NODE_ENV !== 'production') {
           console.log('sqlError.message', sqlError.message);
         }
@@ -39,30 +39,25 @@ class Database {
       throw new Error(sqlError?.message ?? 'SQL ERROR');
     }
 
-    return sqlRes;
+    return sqlRes.rows;
   };
 
   isOpen = (): boolean => !!this.DB;
 
-  open = ({ name, location = 'default' }: DBParamsType) => {
-    return new Promise<SQLite.SQLiteDatabase>(async (resolve, reject) => {
-      if (!!this.DB) return resolve(this.DB);
+  open = (params: DBParamsType) => {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!!this.DB) return resolve();
 
-      SQLite.openDatabase(
-        {
-          name: name,
-          location,
-        },
-        (DB) => {
-          this.DB = DB;
+      this.DB = openDB(params);
 
-          // Нужно включить внешние ключи
-          this.executeSql('PRAGMA foreign_keys = ON').then(() => {
-            return resolve(DB);
-          });
-        },
-        reject
-      );
+      // Нужно включить внешние ключи
+      this.executeSql('PRAGMA foreign_keys = ON')
+        .then(() => {
+          return resolve();
+        })
+        .catch(() => {
+          return reject();
+        });
     });
   };
 
@@ -74,7 +69,7 @@ class Database {
 
       try {
         await this.DB.close();
-      } catch (error) {}
+      } catch {}
 
       this.DB = null;
 
@@ -91,7 +86,7 @@ class Database {
       const sqltime = await this.executeSql(
         "SELECT datetime('now', 'localtime') as dt"
       );
-      return sqltime?.[0]?.rows?.item(0).dt;
+      return sqltime?.[0]?.dt;
     } catch (error: any) {
       return error?.message || 'error';
     }
@@ -104,14 +99,14 @@ class Database {
     const results = await this.executeSql(
       `SELECT COUNT(*) as _count FROM ${table} ${!!where ? ' WHERE ' + where : ''}`
     );
-    return results?.[0]?.rows?.item(0)?._count || 0;
+    return (results?.[0]?._count as number) || 0;
   };
 
   isTableExist = async (table: string = ''): Promise<boolean> => {
     const ifExist = await this.executeSql(
       `SELECT EXISTS(SELECT name FROM sqlite_master WHERE type='table' AND name='${table}') as exist`
     );
-    return !!ifExist?.[0]?.rows?.item(0)?.exist ?? false;
+    return !!(ifExist?.[0]?.exist ?? false);
   };
 
   getTablesSignature = async (): Promise<TableSignature[] | null> => {
@@ -119,7 +114,8 @@ class Database {
       let tableFields = await this.executeSql(`
 		SELECT * FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'android_%'`);
 
-      return formatObject<any>(tableFields).map((i) => {
+      // @ts-ignore
+      return formatObject(tableFields).map((i: any) => {
         const createTableFields: string[] = i.sql
           .slice(i.sql.indexOf('(') + 1, i.sql.lastIndexOf(')'))
           .replace(/\t|\n/g, '')
@@ -193,9 +189,9 @@ class Database {
   addRecord = async (
     tableName: string,
     model: TableSignatureValue
-  ): Promise<[ResultSet] | undefined | null> => {
+  ): Promise<QueryResult | undefined | null> => {
     try {
-      return await this.DB?.executeSql(
+      return await this.DB?.execute(
         `INSERT INTO ${tableName} (${Object.keys(model).join(',')}) 
 			VALUES (${Object.keys(model)
         .map(() => '?')
@@ -214,7 +210,7 @@ class Database {
     tableName: string,
     model: TableSignatureValue,
     initModel: Record<string, any>
-  ): Promise<[ResultSet] | undefined | null> => {
+  ): Promise<QueryResult | undefined | null> => {
     try {
       const where = Object.keys(initModel).reduce((acc, key, index) => {
         const value = initModel[key];
@@ -242,7 +238,7 @@ class Database {
         );
       }, '');
 
-      return await this.DB?.executeSql(
+      return await this.DB?.execute(
         `UPDATE ${tableName} SET ${dataToSet} WHERE ${where}`
       );
     } catch (err) {
@@ -256,7 +252,7 @@ class Database {
   deleteRecord = async (
     tableName: string,
     signature: TableSignatureValue
-  ): Promise<[ResultSet] | undefined | null> => {
+  ): Promise<QueryResult | undefined | null> => {
     try {
       const where = Object.keys(signature).reduce((acc, key, index) => {
         const value = signature[key];
@@ -277,17 +273,15 @@ class Database {
           `${index !== 0 ? ' AND ' : ''}${key}=${typeof value === 'string' ? "'" + value + "'" : value}`
         );
       }, '');
-      const record = await this.DB?.executeSql(
+      const record = await this.DB?.execute(
         `SELECT * FROM ${tableName} WHERE ${where}`
       );
 
-      if (!record?.[0]?.rows?.length) {
+      if (!record?.rows?.length) {
         throw new Error(`Не удалось найти запись в таблице ${tableName}`);
       }
 
-      return await this.DB?.executeSql(
-        `DELETE FROM ${tableName} WHERE ${where}`
-      );
+      return await this.DB?.execute(`DELETE FROM ${tableName} WHERE ${where}`);
     } catch (err) {
       const message = getErrorText(err);
       this.setError(message);
@@ -316,28 +310,13 @@ export function escape(
   return str;
 }
 
-export function formatObject<T>(sqlResults: Array<any> = []): Array<T> {
-  const formatResults = [];
+export function formatObject<T>(sqlResults: QueryResult['rows'] | null): T[] {
+  const formatResults: T[] = [];
+  if (!sqlResults || !sqlResults?.length) return [];
 
-  for (let i0 = 0; i0 < sqlResults.length; i0++) {
-    for (let i = 0; i < sqlResults[i0].rows.length; i++) {
-      let row = sqlResults[i0].rows.item(i);
-
-      //if (row.props) {
-      //	row = JSON.parse(row.props);
-      //}
-
-      //if (row.data && !!row.data.trim()) {
-      //	row.data = tryParse(row.data);
-      //}
-
-      //if (row.jsonInfo) {
-      //	row.jsonInfo = JSON.parse(row.jsonInfo);
-      //}
-
-      formatResults.push(row);
-    }
-  }
+  (sqlResults || []).forEach((row) => {
+    formatResults.push(row as T);
+  });
 
   return formatResults;
 }

@@ -6,7 +6,7 @@ import {
   Image,
   ViewStyle,
   NativeSyntheticEvent,
-  TextInputSubmitEditingEventData,
+  TextInputSubmitEditingEvent,
   KeyboardTypeOptions,
   StyleSheet,
   TextStyle,
@@ -20,7 +20,7 @@ type InputProps = {
   placeholderStyle?: TextStyle | TextStyle[];
   onChangeText: ((text: string) => void) | undefined;
   onSubmitEditing?:
-    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void)
+    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEvent>) => void)
     | undefined;
   onClearButtonPress?: null | (() => void);
   onBlur?: null | (() => void);
@@ -81,9 +81,11 @@ const Input = ({
         ]}
       >
         <TextInput
+          // @ts-ignore
           ref={refInput}
           value={`${text}`}
           onChangeText={onChangeText}
+          // @ts-ignore
           onSubmitEditing={onSubmitEditing}
           style={[styles.Input, placeholderStyle]}
           placeholder={placeholder}
