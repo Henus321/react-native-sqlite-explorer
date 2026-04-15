@@ -6,10 +6,10 @@ import {
   Image,
   ViewStyle,
   NativeSyntheticEvent,
-  TextInputSubmitEditingEvent,
   KeyboardTypeOptions,
   StyleSheet,
   TextStyle,
+  TextInputSubmitEditingEventData,
 } from 'react-native';
 import { GlobalStyles } from '../../styles';
 import Text from '../Text';
@@ -20,7 +20,7 @@ type InputProps = {
   placeholderStyle?: TextStyle | TextStyle[];
   onChangeText: ((text: string) => void) | undefined;
   onSubmitEditing?:
-    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEvent>) => void)
+    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void)
     | undefined;
   onClearButtonPress?: null | (() => void);
   onBlur?: null | (() => void);
