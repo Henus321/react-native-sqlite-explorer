@@ -9,7 +9,7 @@ import {
   KeyboardTypeOptions,
   StyleSheet,
   TextStyle,
-  TextInputSubmitEditingEventData,
+  TextInputSubmitEditingEvent,
 } from 'react-native';
 import { GlobalStyles } from '../../styles';
 import Text from '../Text';
@@ -20,7 +20,7 @@ type InputProps = {
   placeholderStyle?: TextStyle | TextStyle[];
   onChangeText: ((text: string) => void) | undefined;
   onSubmitEditing?:
-    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void)
+    | ((e: NativeSyntheticEvent<TextInputSubmitEditingEvent>) => void)
     | undefined;
   onClearButtonPress?: null | (() => void);
   onBlur?: null | (() => void);
